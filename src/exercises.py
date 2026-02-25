@@ -19,7 +19,7 @@ import sqlite3
 from pathlib import Path
 from typing import Optional, Iterable
 
-DB_PATH = Path("exercises.db")
+DB_PATH = Path("../exercises.db")
 
 
 def connect(db_path: Path = DB_PATH) -> sqlite3.Connection:

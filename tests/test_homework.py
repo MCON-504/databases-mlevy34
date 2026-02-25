@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def load_module(tmp_path: Path):
-    import homework as mod
+    from src import homework as mod
     mod.DB_PATH = tmp_path / "homework_test.db"
     importlib.reload(mod)
     mod.DB_PATH = tmp_path / "homework_test.db"

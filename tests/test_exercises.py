@@ -7,7 +7,7 @@ import pytest
 
 def load_module(tmp_path: Path):
     # Import and redirect DB_PATH to a temp file so tests don't touch the repo
-    import exercises as mod
+    from src import exercises as mod
     mod.DB_PATH = tmp_path / "exercises_test.db"
     importlib.reload(mod)
     mod.DB_PATH = tmp_path / "exercises_test.db"
