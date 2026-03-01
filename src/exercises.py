@@ -75,7 +75,11 @@ def add_student(conn: sqlite3.Connection, name: str, email: str) -> int:
     """
     # cursor = conn.execute("INSERT ...", (...))
     # return cursor.lastrowid
-    raise NotImplementedError
+    student = (name, email)
+    cursor = conn.execute("INSERT INTO students (name, email) VALUES(?, ?);", student)
+    conn.commit()
+    return cursor.lastrowid
+
 
 
 # ---------------------------
@@ -89,7 +93,14 @@ def find_student_by_email(conn: sqlite3.Connection, email: str) -> Optional[sqli
       - Use a parameterized SELECT
       - Use fetchone()
     """
-    raise NotImplementedError
+    row = conn.execute(
+        "SELECT id, name, email FROM students WHERE email = ?;",
+        (email,),
+    ).fetchone()
+    if row:
+        return row
+    else:
+        return None
 
 
 # ---------------------------
@@ -103,7 +114,9 @@ def rename_student(conn: sqlite3.Connection, student_id: int, new_name: str) -> 
       - Use parameterized UPDATE
       - Return cursor.rowcount
     """
-    raise NotImplementedError
+    cursor = conn.execute("UPDATE students SET name = ? WHERE id = ?;", (new_name, student_id))
+    return cursor.rowcount
+
 
 
 # ---------------------------
@@ -116,7 +129,9 @@ def delete_student(conn: sqlite3.Connection, student_id: int) -> int:
     TODO:
       - Use parameterized DELETE
     """
-    raise NotImplementedError
+    cursor = conn.execute("DELETE FROM students WHERE id =?;", (student_id,))
+    conn.commit()
+    return cursor.rowcount
 
 
 # ---------------------------
@@ -130,7 +145,21 @@ def list_enrollments(conn: sqlite3.Connection) -> list[sqlite3.Row]:
       - Write a SELECT with JOIN across enrollments, students, courses
       - ORDER BY student_name, course_code
     """
-    raise NotImplementedError
+
+
+    rows = conn.execute(
+                        '''
+                        SELECT
+                            s.name AS student_name,
+                            c.code as course_code,
+                            c.title AS course_title
+                        FROM enrollments e
+                        JOIN students s on e.student_id = s.id
+                        JOIN courses c ON e.course_id = c.id
+                        ORDER BY student_name, course_code;
+                        '''
+                        ).fetchall()
+    return rows
 
 
 # ---------------------------
@@ -144,7 +173,9 @@ def enroll_student(conn: sqlite3.Connection, student_id: int, course_id: int) ->
       - Use parameterized INSERT into enrollments
       - Do NOT commit here; caller controls commit/rollback.
     """
-    raise NotImplementedError
+
+    conn.execute("INSERT INTO enrollments(student_id, course_id) VALUES(?, ?);", (student_id, course_id))
+
 
 
 def seed_courses(conn: sqlite3.Connection) -> None:
